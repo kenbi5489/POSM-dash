@@ -1,0 +1,85 @@
+.loading-screen {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--background);
+  color: var(--primary);
+  gap: 16px;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.dashboard-app {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.dashboard-main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 32px 64px;
+  width: 100%;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+/* Make sure the base styles for charts take up parent space properly */
+.recharts-wrapper {
+  font-family: var(--font-family) !important;
+}
+
+.recharts-tooltip-cursor {
+  fill: rgba(0,0,0,0.02) !important;
+}
+
+/* ── Global tab navigation bar ── */
+.global-tab-bar {
+  display: flex;
+  background: #0a111a;
+  padding: 10px 24px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.global-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.global-tab-btn:hover {
+  background: rgba(255,255,255,0.05);
+  color: white;
+}
+.global-tab-btn.active {
+  background: rgba(0, 201, 167, 0.1);
+  color: #00C9A7;
+  border: 1px solid rgba(0, 201, 167, 0.2);
+}
+
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-col { display: flex; flex-direction: column; }

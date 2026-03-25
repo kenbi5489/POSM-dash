@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  /* Color Palette */
+  --primary: #1a237e;
+  --primary-light: #0d47a1;
+  --secondary: #7b1fa2;
+  --success: #4caf50;
+  --success-light: #e8f5e9;
+  --warning: #ff9800;
+  --warning-light: #fff3e0;
+  --error: #f44336;
+  --error-light: #ffebee;
+  --info: #2196f3;
+  --info-light: #e3f2fd;
+  --neutral-dark: #424242;
+  --neutral: #757575;
+  --neutral-light: #bdbdbd;
+  --background: #f5f7fa;
+  --surface: #ffffff;
+  --border: #e0e0e0;
+  
+  /* Typography Variables */
+  --font-family: 'Roboto', sans-serif;
+  --text-header-large: 700 24px/32px var(--font-family);
+  --text-header: 700 18px/24px var(--font-family);
+  --text-subheader: 500 14px/20px var(--font-family);
+  --text-body: 400 13px/18px var(--font-family);
+  --text-kpi: 700 36px/40px var(--font-family);
+  
+  /* Spacing */
+  --spacing-section: 24px;
+  --spacing-card-padding: 16px;
+  --spacing-chart-padding: 12px;
+  
+  /* Radii & Shadows */
+  --radius-card: 8px;
+  --radius-button: 4px;
+  --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background);
+  color: var(--neutral-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--primary);
+}
+
+/* Base Utility Classes */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-subtle);
+  padding: var(--spacing-card-padding);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.section-spacing {
+  margin-bottom: var(--spacing-section);
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral);
+}
