@@ -179,6 +179,21 @@
   border-color: rgba(255,255,255,0.1);
 }
 
+.kpi-card-pro.clickable {
+  cursor: pointer;
+}
+
+.kpi-card-pro.active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 15px rgba(0, 201, 167, 0.2);
+}
+
+.kpi-card-pro.red.active { border-color: var(--accent-red); box-shadow: 0 0 15px rgba(255, 107, 107, 0.2); }
+.kpi-card-pro.orange.active { border-color: var(--accent-orange); box-shadow: 0 0 15px rgba(255, 159, 67, 0.2); }
+.kpi-card-pro.purple.active { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(162, 155, 254, 0.2); }
+.kpi-card-pro.pink.active { border-color: var(--accent-pink); box-shadow: 0 0 15px rgba(255, 107, 107, 0.2); }
+
 .kpi-card-pro.teal { border-left: 4px solid var(--accent-teal); }
 .kpi-card-pro.red { border-left: 4px solid var(--accent-red); }
 .kpi-card-pro.gold { border-left: 4px solid var(--accent-gold); }

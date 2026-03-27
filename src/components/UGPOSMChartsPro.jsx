@@ -28,6 +28,11 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+const renderPieLabel = ({ percent, index }) => {
+  if (percent < 0.01) return null;
+  return `${(percent * 100).toFixed(1)}%`;
+};
+
 export const UGPOSMChartsPro = ({ data }) => {
   // ── SECTION 3 DATA ────────────────────────────────────────────────────────
   const posmDataAdj = useMemo(() => {
@@ -141,7 +146,16 @@ export const UGPOSMChartsPro = ({ data }) => {
           <div style={{ height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={posmDataAdj} dataKey="value" stroke="none" innerRadius={60} outerRadius={80} paddingAngle={5}>
+                <Pie 
+                  data={posmDataAdj} 
+                  dataKey="value" 
+                  stroke="none" 
+                  innerRadius={60} 
+                  outerRadius={80} 
+                  paddingAngle={5}
+                  label={renderPieLabel}
+                  labelLine={false}
+                >
                   <Cell fill={COLORS.teal} />
                   <Cell fill={COLORS.red} />
                 </Pie>
@@ -157,7 +171,16 @@ export const UGPOSMChartsPro = ({ data }) => {
           <div style={{ height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={frameData} dataKey="value" stroke="none" innerRadius={60} outerRadius={80} paddingAngle={5}>
+                <Pie 
+                  data={frameData} 
+                  dataKey="value" 
+                  stroke="none" 
+                  innerRadius={60} 
+                  outerRadius={80} 
+                  paddingAngle={5}
+                  label={renderPieLabel}
+                  labelLine={false}
+                >
                   <Cell fill={COLORS.gold} />
                   <Cell fill={COLORS.gray} />
                 </Pie>

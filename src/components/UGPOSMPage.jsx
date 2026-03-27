@@ -92,7 +92,8 @@ export const UGPOSMPage = () => {
     city: 'All',
     pic: 'All',
     frame: 'All',
-    posmStatus: 'All'
+    posmStatus: 'All',
+    kpiCategory: 'All'
   });
 
   useEffect(() => {
@@ -141,6 +142,13 @@ export const UGPOSMPage = () => {
       if (filters.pic !== 'All' && row['Tên nhân viên'] !== filters.pic) return false;
       if (filters.frame !== 'All' && row.Frame !== filters.frame) return false;
       if (filters.posmStatus !== 'All' && row.POSM_Status !== filters.posmStatus) return false;
+
+      // KPI Category Filter
+      if (filters.kpiCategory === 'HasPOSM' && row.POSM_Status !== 'Có POSM') return false;
+      if (filters.kpiCategory === 'NoPOSM_Adj' && (row.POSM_Status !== 'KHÔNG POSM' || row.isPolicyExempt)) return false;
+      if (filters.kpiCategory === 'PolicyExempt' && !row.isPolicyExempt) return false;
+      if (filters.kpiCategory === 'MallsWithPOSM' && !row.mallWithPosm) return false;
+      
       return true;
     });
   }, [rawData, filters]);
@@ -248,7 +256,10 @@ export const UGPOSMPage = () => {
         
         {/* SECTION 2: KPI Scorecards */}
         <div className="kpi-row-pro">
-          <div className="kpi-card-pro bg-navy">
+          <div 
+            className={`kpi-card-pro bg-navy clickable ${filters.kpiCategory === 'All' ? 'active' : ''}`}
+            onClick={() => updateFilter('kpiCategory', 'All')}
+          >
             <div className="kpi-card-header">
               <span>Tổng lượt sitecheck</span>
               <LayoutDashboard size={14} color="var(--text-secondary)" />
@@ -256,15 +267,21 @@ export const UGPOSMPage = () => {
             <div className="kpi-value-pro">{kpis.total.toLocaleString()}</div>
           </div>
           
-          <div className="kpi-card-pro teal">
+          <div 
+            className={`kpi-card-pro teal clickable ${filters.kpiCategory === 'HasPOSM' ? 'active' : ''}`}
+            onClick={() => updateFilter('kpiCategory', filters.kpiCategory === 'HasPOSM' ? 'All' : 'HasPOSM')}
+          >
             <div className="kpi-card-header">
               <span>Cửa hàng CÓ POSM</span>
               <CheckCircle2 size={14} color="var(--accent-teal)" />
             </div>
             <div className="kpi-value-pro" style={{color: 'var(--accent-teal)'}}>{kpis.hasPosm.toLocaleString()}</div>
           </div>
-
-          <div className="kpi-card-pro red">
+ 
+          <div 
+            className={`kpi-card-pro red clickable ${filters.kpiCategory === 'NoPOSM_Adj' ? 'active' : ''}`}
+            onClick={() => updateFilter('kpiCategory', filters.kpiCategory === 'NoPOSM_Adj' ? 'All' : 'NoPOSM_Adj')}
+          >
             <div className="kpi-card-header">
               <span>KHÔNG POSM (Adjusted)</span>
               <XCircle size={14} color="var(--accent-red)" />
@@ -272,24 +289,33 @@ export const UGPOSMPage = () => {
             <div className="kpi-value-pro" style={{color: 'var(--accent-red)'}}>{kpis.adjustedNoPosm.toLocaleString()}</div>
             <div style={{fontSize:'0.65rem', color:'rgba(255,255,255,0.4)', marginTop:'4px'}}>* Trừ chính sách cửa hàng</div>
           </div>
-
-          <div className="kpi-card-pro pink adjusted">
+ 
+          <div 
+            className={`kpi-card-pro pink adjusted clickable ${filters.kpiCategory === 'HasPOSM' ? 'active' : ''}`}
+            onClick={() => updateFilter('kpiCategory', filters.kpiCategory === 'HasPOSM' ? 'All' : 'HasPOSM')}
+          >
             <div className="kpi-card-header">
               <span>Tỉ lệ Có POSM (Adj)</span>
               <Percent size={14} color="#FF6B6B" />
             </div>
             <div className="kpi-value-pro" style={{color: '#FF6B6B'}}>{kpis.posmRateAdjusted}%</div>
           </div>
-
-          <div className="kpi-card-pro orange">
+ 
+          <div 
+            className={`kpi-card-pro orange clickable ${filters.kpiCategory === 'PolicyExempt' ? 'active' : ''}`}
+            onClick={() => updateFilter('kpiCategory', filters.kpiCategory === 'PolicyExempt' ? 'All' : 'PolicyExempt')}
+          >
             <div className="kpi-card-header">
               <span>Chính sách không POSM</span>
               <MapPin size={14} color="var(--accent-orange)" />
             </div>
             <div className="kpi-value-pro" style={{color: 'var(--accent-orange)'}}>{kpis.policyExempt.toLocaleString()}</div>
           </div>
-
-          <div className="kpi-card-pro purple">
+ 
+          <div 
+            className={`kpi-card-pro purple clickable ${filters.kpiCategory === 'MallsWithPOSM' ? 'active' : ''}`}
+            onClick={() => updateFilter('kpiCategory', filters.kpiCategory === 'MallsWithPOSM' ? 'All' : 'MallsWithPOSM')}
+          >
             <div className="kpi-card-header">
               <span>Mall có POSM</span>
               <Percent size={14} color="var(--accent-purple)" />
