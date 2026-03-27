@@ -78,7 +78,8 @@ const normalizeUGRow = (row, index) => {
   const posmStatusRaw = get('POSM_Status') || get('UG POSM') || '';
   const posmStatus = posmStatusRaw.includes('Có POSM') ? 'Có POSM' : posmStatusRaw.includes('KHÔNG POSM') ? 'KHÔNG POSM' : 'Unknown';
   
-  const frame = get('Frame') || 'No';
+  const frameRaw = get('Frame') || 'No';
+  const frame = (frameRaw === 'Frame' || frameRaw === 'Yes') ? 'Yes' : 'No';
   const mallName = get('Mall_Name') || '';
   const locType = get('Location_Type') || '';
   const reason = get('Lý do không có POSM') || '';
