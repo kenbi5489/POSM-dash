@@ -109,8 +109,8 @@ const normalizeUGRow = (row, index) => {
     'Location_Type': locType,
     'District': get('District'),
     'City': get('City'),
-    'Link 1': get('Link 1'),
-    'Link 2': get('Link 2'),
+    'Link 1': get('Link 1', 'Hình ảnh 1', 'Hình ảnh', 'Image 1', 'image1'),
+    'Link 2': get('Link 2', 'Hình ảnh 2', 'Image 2', 'image2'),
     'Note': get('Ghi chú') || get('Note'),
     'Lý do không có POSM': reason,
     

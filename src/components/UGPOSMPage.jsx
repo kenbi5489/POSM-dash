@@ -23,10 +23,18 @@ const MultiSelectDropdown = ({ options, selected, onChange, label = "Selection",
     opt.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const allFilteredAreSelected = filteredOptions.length > 0 && filteredOptions.every(opt => selected.includes(opt));
+
   const toggleAll = () => {
-    if (selected.length === options.length) onChange([]);
-    else onChange([...options]);
+    if (allFilteredAreSelected) {
+      // Unselect all visible options, keep other selected options
+      onChange(selected.filter(opt => !filteredOptions.includes(opt)));
+    } else {
+      // Select all visible options, combine with already selected options
+      onChange([...new Set([...selected, ...filteredOptions])]);
+    }
   };
+
 
   const toggleOne = (opt) => {
     if (selected.includes(opt)) onChange(selected.filter(s => s !== opt));
@@ -64,8 +72,8 @@ const MultiSelectDropdown = ({ options, selected, onChange, label = "Selection",
           )}
           
           <div className="brand-option" onClick={toggleAll}>
-            {selected.length === options.length ? <CheckSquare size={14} /> : <Square size={14} />}
-            <strong>Select All</strong>
+            {allFilteredAreSelected ? <CheckSquare size={14} /> : <Square size={14} />}
+            <strong>Select All {searchTerm ? 'Results' : ''}</strong>
           </div>
           
           {filteredOptions.map(opt => (
@@ -111,26 +119,52 @@ export const UGPOSMPage = () => {
   }, []);
 
   const options = useMemo(() => {
-    const brands = new Set(), weeks = new Set(), locs = new Set(), malls = new Set(), dists = new Set(), cities = new Set(), pics = new Set();
-    rawData.forEach(row => {
-      if (row.Brand) brands.add(row.Brand);
-      if (row.WEEKnum) weeks.add(row.WEEKnum);
-      if (row.Location_Type) locs.add(row.Location_Type);
-      if (row.Mall_Name) malls.add(row.Mall_Name);
-      if (row.District) dists.add(row.District);
-      if (row.City) cities.add(row.City);
-      if (row['Tên nhân viên']) pics.add(row['Tên nhân viên']);
-    });
-    return {
-      brands: Array.from(brands).sort(),
-      weeks: Array.from(weeks).sort((a,b) => parseInt(a.replace('W','')) - parseInt(b.replace('W',''))),
-      locs: Array.from(locs).sort(),
-      malls: Array.from(malls).sort(),
-      dists: Array.from(dists).sort(),
-      cities: Array.from(cities).sort(),
-      pics: Array.from(pics).sort()
+    const getValidSet = (key) => {
+      const set = new Set();
+      rawData.forEach(row => {
+        // Evaluate row against all filters EXCEPT the current filter key
+        if (key !== 'brands' && filters.brands.length > 0 && !filters.brands.includes(row.Brand)) return;
+        if (key !== 'weeks' && filters.weeks.length > 0 && !filters.weeks.includes(row.WEEKnum)) return;
+        if (key !== 'locationType' && filters.locationType !== 'All' && row.Location_Type !== filters.locationType) return;
+        if (key !== 'mall' && filters.mall !== 'All' && row.Mall_Name !== filters.mall) return;
+        if (key !== 'district' && filters.district !== 'All' && row.District !== filters.district) return;
+        if (key !== 'city' && filters.city !== 'All' && row.City !== filters.city) return;
+        if (key !== 'pic' && filters.pic !== 'All' && row['Tên nhân viên'] !== filters.pic) return;
+        if (key !== 'frame' && filters.frame !== 'All' && row.Frame !== filters.frame) return;
+        if (key !== 'posmStatus' && filters.posmStatus !== 'All' && row.POSM_Status !== filters.posmStatus) return;
+
+        // If it passes all OTHER filters, it is a valid option for this filter dropdown
+        if (key === 'brands' && row.Brand) set.add(row.Brand);
+        if (key === 'weeks' && row.WEEKnum) set.add(row.WEEKnum);
+        if (key === 'locationType' && row.Location_Type) set.add(row.Location_Type);
+        if (key === 'mall' && row.Mall_Name) set.add(row.Mall_Name);
+        if (key === 'district' && row.District) set.add(row.District);
+        if (key === 'city' && row.City) set.add(row.City);
+        if (key === 'pic' && row['Tên nhân viên']) set.add(row['Tên nhân viên']);
+      });
+
+      // Always include currently selected filters so they don't mysteriously disappear from the UI
+      if (key === 'brands') filters.brands.forEach(b => set.add(b));
+      if (key === 'weeks') filters.weeks.forEach(w => set.add(w));
+      if (key === 'locationType' && filters.locationType !== 'All') set.add(filters.locationType);
+      if (key === 'mall' && filters.mall !== 'All') set.add(filters.mall);
+      if (key === 'district' && filters.district !== 'All') set.add(filters.district);
+      if (key === 'city' && filters.city !== 'All') set.add(filters.city);
+      if (key === 'pic' && filters.pic !== 'All') set.add(filters.pic);
+
+      return set;
     };
-  }, [rawData]);
+
+    return {
+      brands: Array.from(getValidSet('brands')).sort(),
+      weeks: Array.from(getValidSet('weeks')).sort((a,b) => parseInt(a.replace('W','')) - parseInt(b.replace('W',''))),
+      locs: Array.from(getValidSet('locationType')).sort(),
+      malls: Array.from(getValidSet('mall')).sort(),
+      dists: Array.from(getValidSet('district')).sort(),
+      cities: Array.from(getValidSet('city')).sort(),
+      pics: Array.from(getValidSet('pic')).sort()
+    };
+  }, [rawData, filters]);
 
   const filteredData = useMemo(() => {
     return rawData.filter(row => {

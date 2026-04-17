@@ -12,13 +12,14 @@ export const UGPOSMTablePro = ({ data }) => {
   const currentRows = evidenceData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const exportCSV = () => {
-    const headers = ['Brand', 'Địa chỉ', 'Tình trạng', 'Frame', 'Mall', 'Link 1', 'Link 2', 'Ghi chú'];
+    const headers = ['Brand', 'Địa chỉ', 'Tình trạng', 'Frame', 'Mall', 'Week', 'Link 1', 'Link 2', 'Ghi chú'];
     const rows = evidenceData.map(r => [
       r.Brand,
       `"${r['Địa chỉ'] || ''}"`,
       r.POSM_Status,
       r.Frame,
       r.Mall_Name,
+      r.WEEKnum,
       r['Link 1'],
       r['Link 2'],
       `"${r.Note || ''}"`
@@ -56,6 +57,7 @@ export const UGPOSMTablePro = ({ data }) => {
               <th>STATUS</th>
               <th>FRAME</th>
               <th>MALL</th>
+              <th>WEEK</th>
               <th>ẢNH 1</th>
               <th>ẢNH 2</th>
               <th>GHI CHÚ</th>
@@ -79,6 +81,7 @@ export const UGPOSMTablePro = ({ data }) => {
                   </span>
                 </td>
                 <td>{r.Mall_Name}</td>
+                <td><span className="badge-pro" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>{r.WEEKnum}</span></td>
                 <td>
                   {r['Link 1'] && (
                     <a href={r['Link 1']} target="_blank" rel="noreferrer" className="pro-link">
