@@ -5,8 +5,8 @@ import { UGPOSMTablePro } from './UGPOSMTablePro';
 import { Loader2, Clock, CheckCircle2, XCircle, LayoutDashboard, MapPin, Percent, Image, Search, ChevronDown, CheckSquare, Square } from 'lucide-react';
 import './UGPOSMPage.css';
 
-// ── Searchable Brand Selector Component ──
-const BrandSearchSelector = ({ options, selected, onChange }) => {
+// ── MultiSelect Dropdown Component ──
+const MultiSelectDropdown = ({ options, selected, onChange, label = "Selection", showSearch = false, defaultText = "All Selected" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef(null);
@@ -35,31 +35,33 @@ const BrandSearchSelector = ({ options, selected, onChange }) => {
 
   return (
     <div className="filter-item brand-search-container" ref={dropdownRef}>
-      <label>Brand Selection</label>
+      <label>{label}</label>
       <div 
         className="filter-item select" 
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', minHeight: '38px' }}
         onClick={() => setIsOpen(!isOpen)}
       >
         <span style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
-          {selected.length === 0 ? 'No Brands Selected' : 
-           selected.length === options.length ? 'All Brands' : `${selected.length} Brands selected`}
+          {selected.length === 0 ? `No ${label} Selected` : 
+           selected.length === options.length ? defaultText : `${selected.length} ${label} selected`}
         </span>
         <ChevronDown size={14} />
       </div>
 
       {isOpen && (
         <div className="brand-dropdown">
-          <div className="brand-search-header" onClick={e => e.stopPropagation()}>
-            <Search size={14} style={{ position: 'absolute', left: '16px', top: '21px', color: 'var(--text-secondary)' }} />
-            <input 
-              type="text" 
-              placeholder="Search brand..." 
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ width: '100%', paddingLeft: '30px', background: 'rgba(0,0,0,0.2)' }}
-            />
-          </div>
+          {showSearch && (
+            <div className="brand-search-header" onClick={e => e.stopPropagation()}>
+              <Search size={14} style={{ position: 'absolute', left: '16px', top: '21px', color: 'var(--text-secondary)' }} />
+              <input 
+                type="text" 
+                placeholder={`Search ${label}...`}
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                style={{ width: '100%', paddingLeft: '30px', background: 'rgba(0,0,0,0.2)' }}
+              />
+            </div>
+          )}
           
           <div className="brand-option" onClick={toggleAll}>
             {selected.length === options.length ? <CheckSquare size={14} /> : <Square size={14} />}
@@ -85,7 +87,7 @@ export const UGPOSMPage = () => {
   
   const [filters, setFilters] = useState({
     brands: [], // Array for multi-select
-    week: 'All',
+    weeks: [],  // Array for multi-select
     locationType: 'All',
     mall: 'All',
     district: 'All',
@@ -103,7 +105,8 @@ export const UGPOSMPage = () => {
       setLastUpdated(new Date().toLocaleString());
       // Default: select all brands
       const allBrands = Array.from(new Set(data.map(r => r.Brand).filter(Boolean))).sort();
-      setFilters(prev => ({ ...prev, brands: allBrands }));
+      const allWeeks = Array.from(new Set(data.map(r => r.WEEKnum).filter(Boolean))).sort();
+      setFilters(prev => ({ ...prev, brands: allBrands, weeks: allWeeks }));
     });
   }, []);
 
@@ -131,10 +134,10 @@ export const UGPOSMPage = () => {
 
   const filteredData = useMemo(() => {
     return rawData.filter(row => {
-      // Multi-select brand
+      // Multi-select brand and week
       if (filters.brands.length > 0 && !filters.brands.includes(row.Brand)) return false;
+      if (filters.weeks.length > 0 && !filters.weeks.includes(row.WEEKnum)) return false;
       
-      if (filters.week !== 'All' && row.WEEKnum !== filters.week) return false;
       if (filters.locationType !== 'All' && row.Location_Type !== filters.locationType) return false;
       if (filters.mall !== 'All' && row.Mall_Name !== filters.mall) return false;
       if (filters.district !== 'All' && row.District !== filters.district) return false;
@@ -202,10 +205,22 @@ export const UGPOSMPage = () => {
 
       {/* SECTION 1: Filters Bar (9 filters) */}
       <div className="ug-filter-bar-pro">
-        <BrandSearchSelector 
+        <MultiSelectDropdown 
+          label="Brand"
           options={options.brands} 
           selected={filters.brands} 
           onChange={(val) => updateFilter('brands', val)} 
+          showSearch={true}
+          defaultText="All Brands"
+        />
+        
+        <MultiSelectDropdown 
+          label="WEEK"
+          options={options.weeks} 
+          selected={filters.weeks} 
+          onChange={(val) => updateFilter('weeks', val)} 
+          showSearch={false}
+          defaultText="All Weeks"
         />
         
         <div className="filter-item">
@@ -235,7 +250,6 @@ export const UGPOSMPage = () => {
         </div>
 
         {[
-          { key: 'week', label: 'Week', options: options.weeks },
           { key: 'locationType', label: 'Loc. Type', options: options.locs },
           { key: 'mall', label: 'Mall Name', options: options.malls },
           { key: 'district', label: 'District', options: options.dists },

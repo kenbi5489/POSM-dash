@@ -125,18 +125,20 @@ const normalizeUGRow = (row, index) => {
 };
 
 export const fetchUGData = async (forceMock = false) => {
-  if (forceMock) return mockDataUG;
+  const normalizedMockData = mockDataUG.map((row, index) => normalizeUGRow(row, index));
+  
+  if (forceMock) return normalizedMockData;
 
   try {
     const response = await fetch(UG_SHEET_CSV_URL);
     if (!response.ok) {
       console.warn('UG sheet not ok – using mock data');
-      return mockDataUG;
+      return normalizedMockData;
     }
     const csvText = await response.text();
     if (csvText.trim().startsWith('<')) {
       console.warn('UG sheet returned HTML (auth redirect) – using mock data');
-      return mockDataUG;
+      return normalizedMockData;
     }
 
     return new Promise((resolve) => {
@@ -145,24 +147,24 @@ export const fetchUGData = async (forceMock = false) => {
         skipEmptyLines: true,
         complete: (results) => {
           if (!results.data || results.data.length === 0) {
-            resolve(mockDataUG);
+            resolve(normalizedMockData);
             return;
           }
-          const normalized = results.data.map(normalizeUGRow);
+          const normalized = results.data.map((row, index) => normalizeUGRow(row, index));
           // Sanity-check: if > 80% of rows have null UG POSM, we're on the wrong tab – use mock
           const nullPosmCount = normalized.filter(r => r['UG POSM'] === null).length;
           if (nullPosmCount / normalized.length > 0.8) {
             console.warn('UG sheet data does not match expected schema (wrong gid?) – using mock data');
-            resolve(mockDataUG);
+            resolve(normalizedMockData);
             return;
           }
           resolve(normalized);
         },
-        error: () => resolve(mockDataUG),
+        error: () => resolve(normalizedMockData),
       });
     });
   } catch (e) {
     console.error('fetchUGData failed – using mock data', e);
-    return mockDataUG;
+    return normalizedMockData;
   }
 };
